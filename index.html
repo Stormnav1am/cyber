@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Display IP Address, Location, and Device</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Make an HTTP GET request to retrieve the IP address
+            $.get("https://api.ipify.org?format=json", function(response) {
+                var ipAddress = response.ip;
+
+                // Display the IP address on the web page
+                document.getElementById("ipAddress").textContent = "Your IP address is: " + ipAddress;
+
+                // Make an HTTP GET request to retrieve the location information
+                $.get("http://ip-api.com/json/" + ipAddress, function(locationResponse) {
+                    var location = locationResponse.city + ", " + locationResponse.regionName + ", " + locationResponse.country;
+
+                    // Display the location on the web page
+                    document.getElementById("location").textContent = "Your location is: " + location;
+
+                    // Use regular expressions to extract the device brand from user agent
+                    var deviceName = getDeviceBrand(navigator.userAgent);
+                    document.getElementById("device").textContent = "Your device brand is: " + deviceName;
+                });
+            });
+        });
+
+        // Regular expressions to extract device brand from user agent
+        function getDeviceBrand(userAgent) {
+            var regexList = [
+                { regex: /iPhone|iPod/i, brand: 'Apple iPhone' },
+                { regex: /iPad/i, brand: 'Apple iPad' },
+                { regex: /Android/i, brand: 'Android' },
+                { regex: /Windows Phone|Windows Mobile|WPDesktop/i, brand: 'Windows Phone' },
+                { regex: /Windows/i, brand: 'Windows PC' },
+                { regex: /Macintosh|MacIntel|MacPPC|Mac68K/i, brand: 'Apple Mac' },
+                { regex: /Linux/i, brand: 'Linux PC' },
+                { regex: /CrOS/i, brand: 'Chromebook' },
+                { regex: /BlackBerry|BB10|PlayBook/i, brand: 'BlackBerry' },
+                { regex: /BB\d+|PlayStation/i, brand: 'Other' }
+            ];
+
+            for (var i = 0; i < regexList.length; i++) {
+                if (regexList[i].regex.test(userAgent)) {
+                    return regexList[i].brand;
+                }
+            }
+
+            return 'Unknown';
+        }
+    </script>
+</head>
+<body>
+    <h1>Visitor IP Address, Location, and Device</h1>
+    <p id="ipAddress">Loading...</p>
+    <p id="location"></p>
+    <p id="device"></p>
+</body>
+</html>
